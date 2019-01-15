@@ -1,5 +1,5 @@
 #APIkey
-API_KEY = "XXXXXXXXX"
+API_KEY = "hogehoge"
 #FileName
 file = "shina.jpg"
 
@@ -27,7 +27,6 @@ def RaadJson(datas):
   emo = ["anger","contempt","disgust","fear","happiness","sadness","surprise"]
   #anger, contempt, disgust, fear, happiness, sadness and surprise.
   for data in datas:
-    #
     f = data["faceAttributes"]
     d = f["emotion"]
     for name in emo:
@@ -49,10 +48,11 @@ try:
     data = json.loads(data)
     emotion = RaadJson(data)
     print(emotion)
-    pic = cv2.imread(file)
-    pic = cv2.cvtColor(pic, cv2.COLOR_BGR2RGB)
+    image = cv2.imread(file)
+    image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
     #herokuでのOpenCVのインストールがめんどくさかったので、デプロイする場合はOpenCVを使わない方がいいです。
-    plt.imshow(pic)
+    plt.imshow(image) #画像貼り付け
+    plt.show() #画像表示
     Recognize(emotion)
     conn.close()
 except Exception as e:
