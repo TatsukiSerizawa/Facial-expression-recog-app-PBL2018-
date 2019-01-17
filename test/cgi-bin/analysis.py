@@ -1,3 +1,6 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
 #APIkey
 API_KEY = ""
 
@@ -57,12 +60,12 @@ try:
     pred = Recognize(emotion)
     conn.close()
 
-    html_body = """
+    html_body = ("""
     <html><body><center>
     <img src="%s">
     <p>%s</p>
     <p>%s</p>
-    </center></body></html>""" % (file, emotion, pred)
+    </center></body></html>""" % (file, emotion, pred))
     print("Content-type: text/html\n")
     print(html_body)
 except Exception as e:

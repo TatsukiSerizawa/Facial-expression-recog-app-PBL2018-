@@ -21,3 +21,5 @@
 ・Face APIのドキュメント https://docs.microsoft.com/ja-jp/azure/cognitive-services/face/
 
 ・[Python] FaceAPIを使った感情認識 https://qiita.com/t_aisu_ke/items/0089de5f234e74b7a333
+
+・OpenCVでリアルタイム顔認識してFaceAPIで年齢とか取得する https://aokakes.hatenablog.com/entry/2018/11/02/214005
