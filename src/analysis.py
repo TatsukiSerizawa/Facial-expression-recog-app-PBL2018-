@@ -103,7 +103,7 @@ if __name__ == '__main__':
 					stamp = cv2.imread('./stamp/anger.png')
 				elif emo == 'happiness':
 					stamp = cv2.imread('./stamp/happiness.png')
-				elif eom == 'sadness':
+				elif emo == 'sadness':
 					stamp = cv2.imread('./stamp/sadness.png')
 				elif emo == 'surprise':
 					stamp = cv2.imread('./stamp/surprise.png')
@@ -111,6 +111,8 @@ if __name__ == '__main__':
 					stamp = cv2.imread('./stamp/neutral.png')
 				#自撮り読み込み
 				im = cv2.imread(img_url)
+				#左から(50,50)ピクセルにスタンプ描画
+				clip_image(50,50)
 				cv2.imshow('face', im)
 				cv2.waitKey(0)
 				cv2.destroyAllWindows()
