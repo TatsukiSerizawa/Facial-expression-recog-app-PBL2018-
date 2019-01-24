@@ -31,14 +31,33 @@ def draw(img_url,faces):
 	font = ImageFont.truetype('/usr/share/fonts/truetype/freefont/FreeMono.ttf',40)
 	for face in faces:
 		pos = getRectangle(face)
-		text = face['faceAttributes']['gender']+'/'+str(face['faceAttributes']['age'])
+		emotion = face['faceAttributes']['emotion']
+
+		if emotion['anger'] > emotion['happiness'] and emotion['anger'] > emotion['neutral'] and emotion['anger'] > emotion['sadness'] and emotion['anger'] > emotion['surprise']:
+			emotext = 'anger'
+		elif emotion['happiness'] > emotion['anger'] and emotion['happiness'] > emotion['neutral'] and emotion['happiness'] > emotion['sadness'] and emotion['happiness'] > emotion['surprise']:
+			emotext = 'happiness'
+		elif emotion['sadness'] > emotion['anger'] and emotion['sadness'] > emotion['happiness'] and emotion['sadness'] > emotion['neutral'] and emotion['sadness'] > emotion['surprise']:
+			emotext = 'sadness'
+		elif emotion['surprise'] > emotion['anger'] and emotion['surprise'] > emotion['happiness'] and emotion['surprise'] > emotion['neutral'] and emotion['surprise'] > emotion['sadness']:
+			emotext = 'surprise'
+		else:
+			emotext = 'neutral'
+
+		text = face['faceAttributes']['gender']+'/'+str(face['faceAttributes']['age'])+'\n'+emotext
 		if face['faceAttributes']['gender'] == 'male':
-			draw.rectangle((pos[0][0],pos[1][1],pos[0][0]+220,pos[1][1]+40), fill='#fff', outline='#fff')
+			draw.rectangle((pos[0][0],pos[1][1],pos[0][0]+220,pos[1][1]+80), fill='#fff', outline='#fff')
 			draw.text((pos[0][0]+2,pos[1][1]+2), text, font=font, fill='blue')
 		elif face['faceAttributes']['gender'] == 'female':
-			draw.rectangle((pos[0][0],pos[1][1],pos[0][0]+260,pos[1][1]+40), fill='#fff', outline='#fff')
+			draw.rectangle((pos[0][0],pos[1][1],pos[0][0]+260,pos[1][1]+80), fill='#fff', outline='#fff')
 			draw.text((pos[0][0]+2,pos[1][1]+2), text, font=font, fill='red')
 	img.save(img_url, quality=95)
+	return emotext
+
+def clip_image(x,y):
+	global im
+	h,w,_ = stamp.shape
+	im[y:y+h, x:x+w] = stamp
 
 if __name__ == '__main__':
 	ESC_KEY = 27
@@ -71,16 +90,31 @@ if __name__ == '__main__':
 		elif key == ENTER_KEY:
 			img_url = 'photo.png'
 			cv2.imwrite(img_url, c_frame)
-			faces = CF.face.detect(img_url, face_id=True, landmarks=False, attributes='age,gender')
+			#read age,gender,emotion
+			faces = CF.face.detect(img_url, face_id=True, landmarks=False, attributes='age,gender,emotion')
+			#print(faces)
 			if len(faces)==0:
 				print('顔を認識できませんでした')
 			else:
-				draw(img_url,faces)
+				#分析して感情を返す
+				emo = draw(img_url,faces)
+				#感情に合わせたスタンプ読み込み
+				if emo == 'anger':
+					stamp = cv2.imread('./stamp/anger.png')
+				elif emo == 'happiness':
+					stamp = cv2.imread('./stamp/happiness.png')
+				elif eom == 'sadness':
+					stamp = cv2.imread('./stamp/sadness.png')
+				elif emo == 'surprise':
+					stamp = cv2.imread('./stamp/surprise.png')
+				else:
+					stamp = cv2.imread('./stamp/neutral.png')
+				#自撮り読み込み
 				im = cv2.imread(img_url)
 				cv2.imshow('face', im)
 				cv2.waitKey(0)
 				cv2.destroyAllWindows()
 		end_flag, c_frame = cap.read()
 
+	cap.release()
 	cv2.destroyAllWindows()
-    #cap.release()
