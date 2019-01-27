@@ -48,11 +48,13 @@ def draw(img_url,faces):
 		if face['faceAttributes']['gender'] == 'male':
 			draw.rectangle((pos[0][0],pos[1][1],pos[0][0]+220,pos[1][1]+80), fill='#fff', outline='#fff')
 			draw.text((pos[0][0]+2,pos[1][1]+2), text, font=font, fill='blue')
+			age = 'male'
 		elif face['faceAttributes']['gender'] == 'female':
 			draw.rectangle((pos[0][0],pos[1][1],pos[0][0]+260,pos[1][1]+80), fill='#fff', outline='#fff')
 			draw.text((pos[0][0]+2,pos[1][1]+2), text, font=font, fill='red')
+			age = 'female'
 	img.save(img_url, quality=95)
-	return emotext
+	return emotext, age
 
 def clip_image(x,y):
 	global im
@@ -69,6 +71,7 @@ if __name__ == '__main__':
 	cascade_file = '/home/tatsuki/anaconda3/lib/python3.6/site-packages/cv2/data/haarcascade_frontalface_default.xml'
 	cascade = cv2.CascadeClassifier(cascade_file)
 
+	#カメラをキャプチャ
 	cap = cv2.VideoCapture(DEVICE_ID)
 	end_flag, c_frame = cap.read()
 	height, width, channels = c_frame.shape
@@ -92,23 +95,25 @@ if __name__ == '__main__':
 			cv2.imwrite(img_url, c_frame)
 			#read age,gender,emotion
 			faces = CF.face.detect(img_url, face_id=True, landmarks=False, attributes='age,gender,emotion')
-			#print(faces)
+
 			if len(faces)==0:
 				print('顔を認識できませんでした')
 			else:
 				#分析して感情を返す
-				emo = draw(img_url,faces)
+				emo, age = draw(img_url,faces)
 				#感情に合わせたスタンプ読み込み
 				if emo == 'anger':
-					stamp = cv2.imread('./stamp/anger.png')
-				elif emo == 'happiness':
-					stamp = cv2.imread('./stamp/happiness.png')
+					stamp = cv2.imread('./stamp/fm_anger.png')
+				elif emo == 'happiness' and age == 'male':
+					stamp = cv2.imread('./stamp/m_happiness.png')
+				elif emo == 'happiness' and age == 'female':
+					stamp = cv2.imread('./stamp/f_happiness.png')
 				elif emo == 'sadness':
-					stamp = cv2.imread('./stamp/sadness.png')
+					stamp = cv2.imread('./stamp/fm_sadness.png')
 				elif emo == 'surprise':
-					stamp = cv2.imread('./stamp/surprise.png')
+					stamp = cv2.imread('./stamp/fm_surprise.png')
 				else:
-					stamp = cv2.imread('./stamp/neutral.png')
+					stamp = cv2.imread('./stamp/fm_neutral.png')
 				#自撮り読み込み
 				im = cv2.imread(img_url)
 				#左から(50,50)ピクセルにスタンプ描画
@@ -118,5 +123,6 @@ if __name__ == '__main__':
 				cv2.destroyAllWindows()
 		end_flag, c_frame = cap.read()
 
+	#キャプチャの開放
 	cap.release()
 	cv2.destroyAllWindows()
