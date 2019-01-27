@@ -32,7 +32,7 @@ def draw(img_url,faces):
 	for face in faces:
 		pos = getRectangle(face)
 		emotion = face['faceAttributes']['emotion']
-
+		#表情判定
 		if emotion['anger'] > emotion['happiness'] and emotion['anger'] > emotion['neutral'] and emotion['anger'] > emotion['sadness'] and emotion['anger'] > emotion['surprise']:
 			emotext = 'anger'
 		elif emotion['happiness'] > emotion['anger'] and emotion['happiness'] > emotion['neutral'] and emotion['happiness'] > emotion['sadness'] and emotion['happiness'] > emotion['surprise']:
@@ -48,13 +48,14 @@ def draw(img_url,faces):
 		if face['faceAttributes']['gender'] == 'male':
 			draw.rectangle((pos[0][0],pos[1][1],pos[0][0]+220,pos[1][1]+80), fill='#fff', outline='#fff')
 			draw.text((pos[0][0]+2,pos[1][1]+2), text, font=font, fill='blue')
-			age = 'male'
+			gender = 'male'
 		elif face['faceAttributes']['gender'] == 'female':
 			draw.rectangle((pos[0][0],pos[1][1],pos[0][0]+260,pos[1][1]+80), fill='#fff', outline='#fff')
 			draw.text((pos[0][0]+2,pos[1][1]+2), text, font=font, fill='red')
-			age = 'female'
+			gender = 'female'
 	img.save(img_url, quality=95)
-	return emotext, age
+	#表情と性別を返す
+	return emotext, gender
 
 def clip_image(x,y):
 	global im
@@ -99,14 +100,14 @@ if __name__ == '__main__':
 			if len(faces)==0:
 				print('顔を認識できませんでした')
 			else:
-				#分析して感情を返す
-				emo, age = draw(img_url,faces)
-				#感情に合わせたスタンプ読み込み
+				#分析して感情と性別を返す
+				emo, gender = draw(img_url,faces)
+				#感情と性別に合わせたスタンプ読み込み
 				if emo == 'anger':
 					stamp = cv2.imread('./stamp/fm_anger.png')
-				elif emo == 'happiness' and age == 'male':
+				elif emo == 'happiness' and gender == 'male':
 					stamp = cv2.imread('./stamp/m_happiness.png')
-				elif emo == 'happiness' and age == 'female':
+				elif emo == 'happiness' and gender == 'female':
 					stamp = cv2.imread('./stamp/f_happiness.png')
 				elif emo == 'sadness':
 					stamp = cv2.imread('./stamp/fm_sadness.png')
