@@ -57,11 +57,6 @@ def draw(img_url,faces):
 	#表情と性別を返す
 	return emotext, gender
 
-def clip_image(x,y):
-	global im
-	h,w,_ = stamp.shape
-	im[y:y+h, x:x+w] = stamp
-
 if __name__ == '__main__':
 	ESC_KEY = 27
 	ENTER_KEY = 13
@@ -104,21 +99,30 @@ if __name__ == '__main__':
 				emo, gender = draw(img_url,faces)
 				#感情と性別に合わせたスタンプ読み込み
 				if emo == 'anger':
-					stamp = cv2.imread('./stamp/fm_anger.png')
+					stamp = cv2.imread('./stamp/fm_anger.png', -1)
 				elif emo == 'happiness' and gender == 'male':
-					stamp = cv2.imread('./stamp/m_happiness.png')
+					stamp = cv2.imread('./stamp/m_happiness.png', -1)
 				elif emo == 'happiness' and gender == 'female':
-					stamp = cv2.imread('./stamp/f_happiness.png')
+					stamp = cv2.imread('./stamp/f_happiness.png', -1)
 				elif emo == 'sadness':
-					stamp = cv2.imread('./stamp/fm_sadness.png')
+					stamp = cv2.imread('./stamp/fm_sadness.png', -1)
 				elif emo == 'surprise':
-					stamp = cv2.imread('./stamp/fm_surprise.png')
+					stamp = cv2.imread('./stamp/fm_surprise.png', -1)
 				else:
-					stamp = cv2.imread('./stamp/fm_neutral.png')
+					stamp = cv2.imread('./stamp/fm_neutral.png', -1)
+				#スタンプのアルファチャンネル抜き出し
+				mask = stamp[:,:,3]
+				mask = cv2.cvtColor(mask, cv2.COLOR_GRAY2BGR)
+				mask = mask/255.0
+				stamp = stamp[:,:,:3]
 				#自撮り読み込み
 				im = cv2.imread(img_url)
-				#左から(50,50)ピクセルにスタンプ描画
-				clip_image(50,50)
+				im = im/255.0
+				#透過率に合わせて画像を暗くした上で加算
+				img_height, img_width = stamp.shape[:2]
+				im[0:img_height:,0:img_width] *= 1-mask
+				im[0:img_height:,0:img_width] += stamp*mask
+				#表示
 				cv2.imshow('face', im)
 				cv2.waitKey(0)
 				cv2.destroyAllWindows()
