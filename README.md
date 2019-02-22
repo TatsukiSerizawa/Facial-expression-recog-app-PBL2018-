@@ -16,7 +16,7 @@
 3. 写真を撮る部分を制作
 4. 1~3を繋げる
 
-##参考
+## 参考
 
 ・Face APIのドキュメント https://docs.microsoft.com/ja-jp/azure/cognitive-services/face/
 
